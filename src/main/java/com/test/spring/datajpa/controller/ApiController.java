@@ -1,13 +1,12 @@
 package com.test.spring.datajpa.controller;
 
 import java.io.ByteArrayOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -72,7 +71,7 @@ public class ApiController {
 		} else if (value instanceof Boolean) {
 			cell.setCellValue((Boolean) value);
 		} else if (value instanceof Date) {
-			cell.setCellValue(getFormattedDate((Date)value));
+			cell.setCellValue(getFormattedDate((Date) value));
 		} else {
 			cell.setCellValue((String) value);
 		}
@@ -80,12 +79,11 @@ public class ApiController {
 	}
 
 	private String getFormattedDate(Date date) {
-		  DateFormat aestFormat = new SimpleDateFormat();
-		  TimeZone aestTime = TimeZone.getTimeZone("AEST");
-		  aestFormat.setTimeZone(aestTime);
-		  return aestFormat.format(date);
+		ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.of("Australia/Sydney"));
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss a");
+		return format.format(zonedDateTime);
 	}
-	
+
 	private XSSFWorkbook createWorkBook(List<Announcement> announcements) {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Data");
