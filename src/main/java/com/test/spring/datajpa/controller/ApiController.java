@@ -1,10 +1,13 @@
 package com.test.spring.datajpa.controller;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -18,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +29,7 @@ import com.test.spring.datajpa.model.Announcement;
 import com.test.spring.datajpa.model.Symbol;
 import com.test.spring.datajpa.service.DataExtractorService;
 
-@CrossOrigin(origins = "http://localhost:8081")
+//@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class ApiController {
@@ -70,13 +72,20 @@ public class ApiController {
 		} else if (value instanceof Boolean) {
 			cell.setCellValue((Boolean) value);
 		} else if (value instanceof Date) {
-			cell.setCellValue((Date) value);
+			cell.setCellValue(getFormattedDate((Date)value));
 		} else {
 			cell.setCellValue((String) value);
 		}
 		cell.setCellStyle(style);
 	}
 
+	private String getFormattedDate(Date date) {
+		  DateFormat aestFormat = new SimpleDateFormat();
+		  TimeZone aestTime = TimeZone.getTimeZone("AEST");
+		  aestFormat.setTimeZone(aestTime);
+		  return aestFormat.format(date);
+	}
+	
 	private XSSFWorkbook createWorkBook(List<Announcement> announcements) {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Data");
