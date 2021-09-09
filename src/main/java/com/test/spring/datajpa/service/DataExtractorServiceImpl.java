@@ -19,7 +19,8 @@ public class DataExtractorServiceImpl implements DataExtractorService {
 	
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder.build();
+		RestTemplate restTemplate = builder.build();
+		return restTemplate;
 	}
 	
 	@Autowired
@@ -35,9 +36,13 @@ public class DataExtractorServiceImpl implements DataExtractorService {
 
 	@Override
 	public Symbol getSymbolData(Announcement announcement) {
+		String symbolName= announcement.getCompanyInfo().get(0).getSymbol();
+		if(null == symbolName){
+			symbolName = announcement.getSymbol();
+		}
 		SymbolResponse symbolResponse = restTemplate
 				.getForObject("https://asx.api.markitdigital.com/asx-research/1.0/companies/"
-						+ announcement.getCompanyInfo().get(0).getSymbol() + "/header", SymbolResponse.class);
+						+ symbolName + "/header", SymbolResponse.class);
 		return symbolResponse.getData();
 	}
 

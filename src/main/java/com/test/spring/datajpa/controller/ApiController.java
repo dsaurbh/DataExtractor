@@ -121,26 +121,30 @@ public class ApiController {
 		for (Announcement announcement : announcements) {
 			Row row = sheet.createRow(rowCount++);
 			int columnCount = 0;
-
 			createCell(row, columnCount++, announcement.getSymbol(), style, sheet);
 			createCell(row, columnCount++, announcement.getCompanyInfo().get(0).getSymbol(), style, sheet);
 			createCell(row, columnCount++, announcement.getHeadline(), style, sheet);
 			createCell(row, columnCount++, announcement.getDate(), style, sheet);
-			createCell(row, columnCount++, announcement.getSymbolData().getPriceAsk(), style, sheet);
-			createCell(row, columnCount++, announcement.getSymbolData().getPriceBid(), style, sheet);
-			createCell(row, columnCount++, announcement.getSymbolData().getPriceLast(), style, sheet);
-			createCell(row, columnCount++, announcement.getSymbolData().getPriceChange(), style, sheet);
-			createCell(row, columnCount++, announcement.getSymbolData().getMarketCap(), style, sheet);
-
-		}
-
+			if(null!=announcement.getSymbolData()){
+				createCell(row, columnCount++, announcement.getSymbolData().getPriceAsk(), style, sheet);
+				createCell(row, columnCount++, announcement.getSymbolData().getPriceBid(), style, sheet);
+				createCell(row, columnCount++, announcement.getSymbolData().getPriceLast(), style, sheet);
+				createCell(row, columnCount++, announcement.getSymbolData().getPriceChange(), style, sheet);
+				createCell(row, columnCount++, announcement.getSymbolData().getMarketCap(), style, sheet);
+				}
+			}
 	}
 
 	private List<Announcement> extractData() {
 		List<Announcement> announcements = dataExtractorService.getAnnouncements();
 		announcements.forEach(announcement -> {
-			Symbol symbol = dataExtractorService.getSymbolData(announcement);
-			announcement.setSymbolData(symbol);
+			try{
+				Symbol symbol = dataExtractorService.getSymbolData(announcement);
+				announcement.setSymbolData(symbol);
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+			
 		});
 		return announcements;
 	}
